@@ -3,6 +3,7 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
+.ipynb_checkpoints/
 
 # Dataset files are downloaded separately; keep metadata and checksums tracked.
 dataset/liquipedia-final.zip
