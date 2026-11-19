@@ -3,3 +3,9 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
+
+# Dataset files are downloaded separately; keep metadata and checksums tracked.
+dataset/liquipedia-final.zip
+dataset/*/csv/*.csv
+dataset/*/parsed.json
+dataset/*/tournament.json
