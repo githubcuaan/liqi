@@ -1,0 +1,9 @@
+{
+  "dataset_version": "035ce761e53a47dbfd18ca1d9fabe7ceb0ec79115271bccac303bed2a6c0195c",
+  "model_name": "forest_depth_3",
+  "selection_metric": "validation_brier",
+  "threshold": 0.5,
+  "symmetrize": false,
+  "fit_partition": "train",
+  "selection_partition": "validation"
+}
