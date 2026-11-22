@@ -10,3 +10,9 @@ dataset/liquipedia-final.zip
 dataset/*/csv/*.csv
 dataset/*/parsed.json
 dataset/*/tournament.json
+dataset/processed/
+artifacts/*.joblib
+artifacts/*.json
+web/node_modules/
+web/dist/
+web/*.tsbuildinfo
