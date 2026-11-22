@@ -1,8 +1,18 @@
 """Encode post-draft games and fit simple train-only baselines."""
 
 from dataclasses import dataclass
+from typing import Protocol, Sequence
 
 from liqily.prediction.data import Game
+
+
+class FeatureInput(Protocol):
+    """Fields observable before a game; never include the outcome label."""
+
+    team_a_heroes: frozenset[str]
+    team_b_heroes: frozenset[str]
+    team_a_side: str
+    patch_id: str
 
 
 @dataclass(frozen=True)
@@ -42,7 +52,7 @@ class FeatureEncoder:
 
         return tuple(names)
 
-    def transform_one(self, game: Game) -> list[int]:
+    def transform_one(self, game: FeatureInput) -> list[int]:
         """Encode a game without changing the training vocabulary."""
         known_heroes = set(self.hero_ids)
         known_patches = set(self.patch_ids)
@@ -64,11 +74,11 @@ class FeatureEncoder:
 
         return values
 
-    def transform(self, games: list[Game]) -> list[list[int]]:
+    def transform(self, games: Sequence[FeatureInput]) -> list[list[int]]:
         """Encode games with the same columns used for training."""
         return [self.transform_one(game) for game in games]
 
-    def unknown_categories(self, game: Game) -> dict[str, object]:
+    def unknown_categories(self, game: FeatureInput) -> dict[str, object]:
         """Return unseen categories for later inference warnings."""
         known_heroes = set(self.hero_ids)
 
@@ -98,7 +108,7 @@ class MajorityBaseline:
         probability = sum(game.team_a_win for game in train_games) / len(train_games)
         return cls(probability=probability)
 
-    def predict_proba(self, games: list[Game]) -> list[float]:
+    def predict_proba(self, games: Sequence[FeatureInput]) -> list[float]:
         """Return the same probability for every game."""
         return [self.probability] * len(games)
 
@@ -127,7 +137,7 @@ class SideBaseline:
             red_probability=rate(by_side["red"]),
         )
 
-    def predict_proba(self, games: list[Game]) -> list[float]:
+    def predict_proba(self, games: Sequence[FeatureInput]) -> list[float]:
         """Use the overall prior if a side had no training examples."""
         probabilities: list[float] = []
 
