@@ -97,17 +97,47 @@ Ghi môi trường, thư viện/phiên bản, seed và phiên bản dữ liệu.
 
 ### 4.1. EDA và trực quan hóa
 
-Chọn biểu đồ từ các notebook: số ván và tỷ lệ nhãn theo tập; phe/patch; tướng được chọn nhiều; tỷ lệ thắng quan sát theo tướng **kèm số ván**; tần suất cặp tướng; ma trận đặc trưng. Mỗi hình có tên, trục, đơn vị, nguồn và nhận xét. Không suy ra tướng mạnh chỉ từ tỷ lệ thắng thô của mẫu nhỏ.
+Các biểu đồ được tái tạo sau khi áp dụng quy tắc làm sạch trong `notebook/03_DataVisualization.ipynb`. Ba tập có 299 ván: Train 231, Validation 28 và Test 40. Kiểm tra chất lượng không ghi nhận dòng bị loại do thiếu nhãn, đội hình fallback, ID ngoài danh mục, tướng trùng trong đội hình hoặc `game_id` trùng. Các biểu đồ về tướng và cặp tướng bên dưới chỉ dùng **Train** để mô tả dữ liệu huấn luyện, không dùng nhãn của Validation/Test để chọn đặc trưng hay kết luận.
+
+**Hình 4.1. Quy mô và phân bố nhãn theo tập** (`visualization_output/01_quy_mo_va_nhan.png`). Biểu đồ trái: trục hoành là tập dữ liệu, trục tung là số ván (ván); biểu đồ phải: trục hoành là tập, trục tung là số ván, phân màu theo nhãn Team A thua/thắng. Nguồn: các tệp `train.csv`, `validation.csv`, `test.csv` trong snapshot dữ liệu, sau cleaning. Train có 231 ván (103 thua, 128 thắng), Validation có 28 (12 thua, 16 thắng), Test có 40 (13 thua, 27 thắng). Tỷ lệ lớp thắng của Team A trong Train là 55,4%, nên baseline đoán lớp đa số đã có mức accuracy tham khảo 55,4%; các tập holdout nhỏ và tỷ trọng nhãn khác nhau, do đó không nên so sánh tỷ lệ giữa tập như một xu hướng.
+
+**Hình 4.2. Tỷ lệ thắng theo phe và số ván theo patch** (`visualization_output/02_side_va_patch.png`). Biểu đồ trái: trục hoành là phe Team A, trục tung là tỷ lệ thắng quan sát (%), nhãn trên cột gồm số ván; biểu đồ phải: trục hoành là số ván, trục tung là patch, màu biểu diễn tập. Nguồn: CSV sau cleaning; tỷ lệ thắng tính trên Train, phân bố patch tính trên cả ba tập. Trong Train, Team A thắng 58,3% khi ở phe blue (108 ván) và 52,8% khi ở phe red (123 ván). Chênh lệch quan sát này chưa chứng minh phe gây lợi thế vì có thể chịu ảnh hưởng của đội tuyển, đối thủ và cỡ mẫu. Patch `aov:vn:2026-04-23` chỉ xuất hiện ở Test, nên đây là trường hợp patch chưa thấy trong Train cần được xem xét khi diễn giải kết quả mô hình.
+
+**Hình 4.3. 15 tướng được chọn nhiều nhất trong Train** (`visualization_output/03_top_tuong.png`). Trục hoành là lượt chọn (lượt), trục tung là tên tướng; mỗi lượt được tính khi tướng xuất hiện trong một đội hình của một ván. Nguồn: đội hình hai đội trong `train.csv` sau cleaning, đối chiếu tên bằng `heroes.csv`; tướng `unknown` bị loại. Toro được chọn nhiều nhất, 87 lượt, xuất hiện trong 37,7% số ván Train. Đây là thống kê mức độ phổ biến trong mẫu, không phải thước đo sức mạnh.
+
+**Hình 4.4. Tỷ lệ thắng quan sát và số lượt chọn theo tướng trong Train** (`visualization_output/04_ty_le_thang.png`). Biểu đồ trái: trục hoành là tỷ lệ thắng quan sát (%), trục tung là tên tướng; điểm biểu diễn tỷ lệ và thanh ngang là khoảng Wilson 95%, nhãn `n` là số lượt có nhãn. Biểu đồ phải: trục hoành là lượt chọn, trục tung là tỷ lệ thắng (%); mỗi điểm là một tướng. Nguồn: các ván Train có tướng trong đội hình, tính thắng/thua theo đội chứa tướng; chỉ hiển thị xếp hạng các tướng có ít nhất 10 lượt có nhãn. Có 57/83 tướng đạt ngưỡng này. Tỷ lệ cao đi kèm khoảng bất định rộng khi số ván ít; vì vậy không xem các thứ hạng tỷ lệ thô là bằng chứng tướng mạnh, cũng không suy ra quan hệ nhân quả từ lựa chọn tướng và kết quả.
+
+**Hình 4.5. Đồng xuất hiện của 12 tướng phổ biến nhất trong cùng đội** (`visualization_output/05_cap_tuong.png`). Hai trục là tên tướng; màu sắc và số trong ô là số đội hình (đội-ván) cùng chứa cặp tướng đó (đội hình); đường chéo được đặt bằng 0. Nguồn: hai đội trong từng ván Train sau cleaning. Ma trận đối xứng; ô đậm cho biết cặp thường cùng xuất hiện hơn trong mẫu và có thể dùng làm đầu mối khảo sát luật kết hợp. Đồng xuất hiện không đồng nghĩa phối hợp hiệu quả hoặc làm tăng xác suất thắng; cần đánh giá support/lift và nhãn thắng/thua riêng.
+
+**Hình 4.6. Ma trận đặc trưng tướng và phân bố giá trị mã hóa** (`visualization_output/06_ma_tran_dac_trung.png`). Biểu đồ trái: trục hoành là 12 tướng phổ biến, trục tung là vị trí ván trong 30 ván Train đầu; màu biểu thị giá trị mã hóa (−1: Team B, 0: hiệu hai đội bằng 0, +1: Team A). Biểu đồ phải: trục hoành là giá trị mã hóa, trục tung là số ô (ô đặc trưng). Nguồn: ma trận đặc trưng tạo từ Train; encoder tướng và OneHotEncoder phe/patch chỉ được fit trên Train. Toàn bộ ma trận Train có kích thước 231 × 88 (83 đặc trưng tướng, 5 đặc trưng phân loại); 88,0% ô trong khối tướng bằng 0 và không có cột hằng. Tính thưa phù hợp với việc mỗi ván chỉ có 10 lượt chọn, nhưng giá trị 0 cũng có thể do cùng một tướng xuất hiện ở cả hai đội và bị triệt tiêu, không chỉ có nghĩa là tướng vắng mặt.
+
+Các đường dẫn hình trên là đường dẫn đầu ra do notebook tạo; khi đưa vào bản báo cáo cuối, chèn ảnh tương ứng và giữ nguyên chú thích, đơn vị, nguồn cùng nhận xét để người đọc phân biệt mô tả dữ liệu với kết luận mô hình.
 
 ### 4.2. Kết quả mô hình dự đoán
 
-| Phương pháp                          | Validation Brier/log loss | Test Brier/log loss | Test accuracy | Test balanced accuracy | Nhận xét  |
-| ------------------------------------ | ------------------------: | ------------------: | ------------: | ---------------------: | --------- |
-| Baseline                             |                         … |                   … |             … |                      … | Mốc cơ sở |
-| Logistic Regression                  |                         … |                   … |             … |                      … | …         |
-| Random Forest/mô hình cây tăng cường |                         … |                   … |             … |                      … | …         |
+Thí nghiệm dùng snapshot `035ce761e53a47dbfd18ca1d9fabe7ceb0ec79115271bccac303bed2a6c0195c`: 231 ván train, 28 validation và 40 test. Encoder và mô hình được fit trên Train (83 tướng, 3 patch đã thấy; 173 đặc trưng), cấu hình được chọn theo Brier trên Validation, rồi đánh giá Test một lần theo policy đã khóa. Không fit lại trên holdout. Brier và log loss càng thấp càng tốt; accuracy và balanced accuracy càng cao càng tốt, ngưỡng phân loại là 0,5.
 
-Chỉ điền **số thực đo** sau khi chạy. Bổ sung ma trận nhầm lẫn, đồ thị hiệu chỉnh xác suất/độ tin cậy nếu có, kết quả khi gặp tướng/patch mới và phân tích lỗi. Nêu rõ nếu mô hình không vượt baseline; test chỉ có 40 ván nên tránh kết luận quá mức.
+| Phương pháp | Validation Brier / log loss | Test Brier / log loss | Test accuracy | Test balanced accuracy | Nhận xét |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Majority baseline | 0,2452 / 0,6835 | 0,233989 / 0,661010 | 0,6750 | 0,5000 | Mốc cơ sở dùng tỷ lệ thắng chung của Team A ước lượng từ Train. |
+| Side baseline | 0,2485 / 0,6902 | **0,233249 / 0,659431** | 0,6750 | 0,5000 | Baseline dùng tỷ lệ thắng theo phe từ Train; tốt nhất trong các phương pháp có số đo Test. |
+| Logistic Regression (`C=0,1`) | 0,2551 / 0,7058 | — | — | — | Không được chọn; không đánh giá trên Test theo quy trình đã định. |
+| Logistic Regression (`C=1`) | 0,2950 / 0,8692 | — | — | — | Không được chọn; không đánh giá trên Test theo quy trình đã định. |
+| Random Forest (`max_depth=3`) | **0,2441 / 0,6815** | 0,235367 / 0,663581 | 0,6500 | 0,4815 | Được chọn theo Brier Validation; chỉ nhỉnh hơn majority baseline khoảng 0,0011 Brier trên Validation, nhưng không vượt baseline trên Test. |
+| Random Forest (`max_depth=5`) | 0,2449 / 0,6832 | — | — | — | Accuracy Validation 0,6429 và balanced accuracy 0,5833; không được chọn theo Brier đã định trước nên không đánh giá Test. |
+
+**Đánh giá Test và ma trận nhầm lẫn.** Trong 40 ván Test, Team A thắng 27 và thua 13. Random Forest được chọn có Brier/log loss cao hơn cả hai baseline; accuracy 0,6500 thấp hơn 0,6750, balanced accuracy 0,4815 thấp hơn 0,5000. Vì vậy mô hình **không vượt baseline trên Test**. Ma trận nhầm lẫn của Random Forest (`forest_depth_3`, hàng là nhãn thực tế, cột là dự đoán; thứ tự thua, thắng):
+
+|  | Dự đoán A thua | Dự đoán A thắng |
+| --- | ---: | ---: |
+| A thua | 0 | 13 |
+| A thắng | 1 | 26 |
+
+Mô hình chỉ nhận diện đúng 26/27 ván Team A thắng và không nhận diện đúng ván thua nào. Accuracy 65% vì thế không phản ánh khả năng phân biệt tốt hai lớp. Không có đồ thị hiệu chỉnh xác suất/độ tin cậy trong kết quả hiện tại; không đưa ra nhận xét về calibration ngoài các chỉ số Brier và log loss.
+
+**Tướng/patch chưa thấy và phân tích lỗi.** Phân nhóm mô tả trên Test (các nhóm có thể giao nhau): 33 ván có cả tướng và patch đã thấy trong Train (Brier 0,233826; accuracy 0,6364); 4 ván có tướng mới (0,240531; 0,7500); 6 ván có patch mới (0,244954; 0,6667); 3 ván có cả tướng và patch mới (0,244483; 0,6667). Các số ở nhóm nhỏ chỉ mang tính mô tả, không dùng để chọn lại mô hình. Tướng/patch lạ được mã hóa unknown nhưng tác động của chúng không được học từ Train. Ma trận nhầm lẫn cho thấy lỗi tập trung ở toàn bộ 13 ván Team A thua; mô hình có xu hướng dự đoán Team A thắng. Chưa có phân tích định tính từng ván trong báo cáo nguồn, do đó không quy lỗi cho một tướng, patch hay phe cụ thể.
+
+Kết quả chi tiết và policy nằm trong `docs/report/prediction_final_evaluation.md`; số liệu Validation và cấu hình so sánh nằm trong `notebook/05_ModelComparison.ipynb`. Test chỉ có 40 ván thuộc 8 series, còn Validation có 28 ván thuộc 7 series; các ván cùng series không hoàn toàn độc lập. Kết quả này chưa chứng minh khả năng tổng quát hóa và không nên được dùng để điều chỉnh mô hình/ngưỡng sau đánh giá.
 
 ### 4.3. Kết quả cặp tướng
 
