@@ -1,0 +1,4 @@
+﻿Tập,Trước cleaning,Sau cleaning,Thiếu nhãn,Đội hình fallback,ID ngoài danh mục,Đội hình trùng tướng,Trùng game_id
+train,231,231,0,0,0,0,0
+validation,28,28,0,0,0,0,0
+test,40,40,0,0,0,0,0

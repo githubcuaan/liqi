@@ -2,9 +2,9 @@
 
 ứng dụng đơn giản giúp người chơi liên quân mobile
 
-- dự đoán đội thắng dựa trên lineup tướng
-- nhận biết các cặp tướng mạnh đi với nhau dựa trên assoation rule
-- recomendation cấm/chon
+- dự đoán đội thắng dựa trên lineup tướng - an
+- nhận biết các cặp tướng mạnh đi với nhau dựa trên assoation rule - đại
+- recomendation cấm/chon - trọng
 
 ## dataset
 
